@@ -10,4 +10,17 @@ add an action, source, and output. For example, my config looks like:
          
 That should allow you to transpile a cfc to a ts file.
 
+# Transpile whole directory.
+
+To transpile an entire directory in one go, add the command line option -all to your run configuration.
+
+Right-click your project. Select Run-As/Run Configurations and select the Arguments tab. Add the -all flag to your arguments list. When using -all to transpile a directory, the -o (output) and -s (source) become the directories to read from and write to. The ouput .ts files will overwrite any files that already exist with the same names in that output directory.
+
+    -action transpile -all
+         -s /Users/ianhickey/Documents/workspace/antlr/jCFTransmission/test/ 
+         -o /Users/ianhickey/Documents/workspace/antlr/jCFTransmission/testoutput/
+
+
+
+
 
