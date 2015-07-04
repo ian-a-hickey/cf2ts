@@ -177,7 +177,7 @@ public class Main {
 				cfcFile = file;
 				tsFile = listOfFiles.get(cfcFile);
 				System.out.println("Transpiling: " + cfcFile + " -> " + tsFile);
-				//CFTransmission.transpile(cfcFile, tsFile);
+				CFTransmission.transpile(cfcFile, tsFile);
 			}
 			
 		} else if (line.hasOption("action")) {
@@ -185,7 +185,7 @@ public class Main {
 			cfcFile = line.getOptionValue("s");
 			tsFile = line.getOptionValue("o");
 			System.out.println(tsFile);
-			//CFTransmission.transpile(cfcFile, tsFile);
+			CFTransmission.transpile(cfcFile, tsFile);
 		}
 
 	}
