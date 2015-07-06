@@ -3,12 +3,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
@@ -31,6 +29,7 @@ import org.apache.commons.cli.ParseException;
  * @author ianhickey
  *
  */
+@SuppressWarnings("deprecation")
 public class Main {
 	/**
 	 * //This class allows us to access this project from the command line.
@@ -103,7 +102,9 @@ public class Main {
 		Option add = new Option("add",
 				"adds properties and or methods to a source file");
 		Option version = new Option("version", "displays the version");
-		Option all = new Option("all", "Indicates that all files in the source (-s path/to/files) should be transpiled into (-o path/to/output).");
+		Option all = new Option(
+				"all",
+				"Indicates that all files in the source (-s path/to/files) should be transpiled into (-o path/to/output).");
 
 		Options options = new Options();
 
@@ -168,18 +169,22 @@ public class Main {
 			}
 
 			// Grab the list of files
-			HashMap<String, String> listOfFiles = getDirectoryList(line.getOptionValue("s"), line.getOptionValue("o"));
+			HashMap<String, String> listOfFiles = getDirectoryList(
+					line.getOptionValue("s"), line.getOptionValue("o"));
 			System.out.println(listOfFiles.toString());
 			// Iterate through the directory translating each file as we go.
-			
+
 			for (String file : listOfFiles.keySet()) {
 				action = "transpile";
 				cfcFile = file;
 				tsFile = listOfFiles.get(cfcFile);
 				System.out.println("Transpiling: " + cfcFile + " -> " + tsFile);
-				CFTransmission.transpile(cfcFile, tsFile);
+				CFTransmission.transpile(line.getOptionValue("s")
+						+ java.io.File.separator + cfcFile,
+						line.getOptionValue("o") + java.io.File.separator
+								+ tsFile);
 			}
-			
+
 		} else if (line.hasOption("action")) {
 			action = "transpile";
 			cfcFile = line.getOptionValue("s");
@@ -189,45 +194,53 @@ public class Main {
 		}
 
 	}
+
 	/**
 	 * Attempts to get a list of files from a directory.
+	 * 
 	 * @param pathToFiles
 	 * @return A list of files with paths for processing
 	 */
-	public static HashMap<String, String> getDirectoryList(String pathToInputFiles, String pathToOutputFiles) {
-		/** Holds the files
+	public static HashMap<String, String> getDirectoryList(
+			String pathToInputFiles, String pathToOutputFiles) {
+		/**
+		 * Holds the files
 		 */
 		HashMap<String, String> fileMap = new HashMap<String, String>();
-		
-		/** Attempt to get the file type and name and pushes to the list.
+
+		/**
+		 * Attempt to get the file type and name and pushes to the list.
 		 */
 		try {
 			File folder = new File(pathToInputFiles);
-			ArrayList<String> names = new ArrayList<String>(Arrays.asList(folder.list()));
+			ArrayList<String> names = new ArrayList<String>(
+					Arrays.asList(folder.list()));
 			System.out.println(names.toString());
 			for (String currentName : names) {
-				File currentFile = new File(pathToInputFiles + java.io.File.separator + currentName);
+				File currentFile = new File(pathToInputFiles
+						+ java.io.File.separator + currentName);
 				if (currentFile.isFile()) {
 					// Make sure it is a cfc that we are working with.
 					if (currentFile.getName().toLowerCase().contains(".cfc")) {
 						String fileNameWithPath = "";
 						fileNameWithPath = currentFile.getName().split(".cfc")[0];
 						System.out.println(fileNameWithPath);
-						fileMap.put(fileNameWithPath + ".cfc", fileNameWithPath + ".ts");
+						fileMap.put(fileNameWithPath + ".cfc", fileNameWithPath
+								+ ".ts");
 					}
-					
+
 				} else if (currentFile.isDirectory()) {
 					/** ignore sub-directories for now, but add option later. */
 					// System.out.println("Directory " +
 					// listOfFiles[i].getName());
 				}
 			}
-			
+
 		}// <--end try
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return fileMap;
 	}
 

@@ -124,7 +124,7 @@ public class CFTransmission {
 	    ParseTreeWalker walker = new ParseTreeWalker();
 	    
 	    //Switch the listener based on the passed in arguments.
-	    listener = new TranspileToTypescript(parser, tokens, cfcfile, outFile, "transpile");
+	    listener = new TranspileToTypescript(parser, tokens, cfcfile, outFile, "transpile", false);//last option for generating get and set decorators
 	    
 	    walker.walk(listener, componentData);
 	    

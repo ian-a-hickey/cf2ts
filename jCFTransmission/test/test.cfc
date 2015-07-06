@@ -42,7 +42,7 @@
     
     If you modify this program, you may extend this exception to your version 
     of the program, but you are not obligated to do so.
-property name="commentproductID" ormtype="string" length="32" fieldtype="id" generator="uuid" unsavedvalue="" default="";
+
 Notes:
 
 */
