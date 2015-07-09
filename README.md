@@ -20,6 +20,18 @@ Right-click your project. Select Run-As/Run Configurations and select the Argume
          -s /Users/ianhickey/Documents/workspace/antlr/jCFTransmission/test/ 
          -o /Users/ianhickey/Documents/workspace/antlr/jCFTransmission/testoutput/
 
+#Turn off transpiler warnings 
+
+To turn off the default warning that appear when transpiling a file, use the -e NONE option on the command line.
+
+    -action transpile -all -s /Users/ianhickey/git/cf2ts/jCFTransmission/test -o /Users/ianhickey/git/cf2ts/jCFTransmission/test -e NONE
+    
+Additionally, an option for logging to console (default) or logging to a file was added.
+
+    -action transpile -all -s /Users/ianhickey/git/cf2ts/jCFTransmission/test -o /Users/ianhickey/git/cf2ts/jCFTransmission/test -e {NONE, TOCONSOLE, TOFILE}
+    
+    
+    
 
 
 
