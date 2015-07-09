@@ -43,6 +43,10 @@ public class Main {
 		// |=================================================================================>>>
 		// Get our lexer
 		CFTransmissionListener listener = null;
+		String v = "1.0.0";
+		//Set the ERROR_MODE - {TOFILE, TOCONSOLE, NONE}
+		String ERROR_MODE = "TOCONSOLE";
+		String LOG_FILE = "cf2tslog.txt";
 		String cfcFileList = null;
 		String[] cfcFiles = null;
 		String action = "";
@@ -52,7 +56,6 @@ public class Main {
 		String returnType = "source";
 		String properties = "";
 		Integer numberOfFiles = 0;
-		String v = "1.0.0";
 		// |=================================================================================>>>
 		// Handle CLI
 		Option srcfile = OptionBuilder
@@ -69,10 +72,17 @@ public class Main {
 				.withDescription(
 						"output file for the transpiled typescript including to path to that file as /path/to/file/filename.ts")
 				.create("o");
-
+		
+		Option errorMode = OptionBuilder
+				.withArgName("errorMode")
+				.hasArgs(1)
+				.withDescription(
+						"sets the error logging mode. Valid modes are TOFILE, TOCONSOLE, NONE")
+				.create("e");
+		
 		Option logfile = OptionBuilder
-				.withArgName("logfile=/path/to/log/directory/logfilename")
-				.hasArgs(2)
+				.withArgName("logfilename")
+				.hasArgs(1)
 				.withDescription(
 						"log file for log messages including to path to that file as /path/to/file/filename.txt")
 				.create("l");
@@ -120,6 +130,8 @@ public class Main {
 		options.addOption(nameChange);
 		options.addOption(help);
 		options.addOption(actionOption);
+		options.addOption(errorMode);
+		options.addOption(logfile);
 		options.addOption(all);
 
 		// |-->create the parser<--|//
@@ -144,7 +156,7 @@ public class Main {
 
 		else if (line.hasOption("help")) {
 			System.out
-					.println("Usage: -action {transpile, get, add, rename, ...} -s srcfile=/path/to/file/filename.cfc -o outfile=/path/to/output/directory/filename.ts -v (verbose)\n");
+					.println("Usage: -action {transpile, get, add, rename, ...} -all {all is options and will compile all file in source to output} -s srcfile=/path/to/file/filename.cfc -o outfile=/path/to/output/directory/filename.ts -v (verbose) -e logErrors={TOFILE, TOCONSOLE, NONE} -l logFile=/pathToFile/fileName.ext \n");
 
 		}
 
@@ -167,13 +179,20 @@ public class Main {
 			if (isLogging) {
 				String pathToLogFile = line.getOptionValue("logfile");
 			}
-
+			//System.out.println("Setting Mode To: " + line.hasOption("e"));
+			if (line.hasOption("e") && line.hasOption("l")){
+				ERROR_MODE = line.getOptionValue("e");
+				LOG_FILE   = line.getOptionValue("l");	
+				//System.out.println("Setting Mode To: " + ERROR_MODE);
+			}else if (line.hasOption("e") && line.getOptionValue("e").equals("NONE")){
+				ERROR_MODE = "NONE";
+				//System.out.println("Setting Mode To: " + ERROR_MODE);
+			}
 			// Grab the list of files
 			HashMap<String, String> listOfFiles = getDirectoryList(
 					line.getOptionValue("s"), line.getOptionValue("o"));
-			System.out.println(listOfFiles.toString());
+			//System.out.println(listOfFiles.toString());
 			// Iterate through the directory translating each file as we go.
-
 			for (String file : listOfFiles.keySet()) {
 				action = "transpile";
 				cfcFile = file;
@@ -182,15 +201,15 @@ public class Main {
 				CFTransmission.transpile(line.getOptionValue("s")
 						+ java.io.File.separator + cfcFile,
 						line.getOptionValue("o") + java.io.File.separator
-								+ tsFile);
+								+ tsFile, ERROR_MODE);
 			}
 
 		} else if (line.hasOption("action")) {
 			action = "transpile";
 			cfcFile = line.getOptionValue("s");
 			tsFile = line.getOptionValue("o");
-			System.out.println(tsFile);
-			CFTransmission.transpile(cfcFile, tsFile);
+			//System.out.println(tsFile);
+			CFTransmission.transpile(cfcFile, tsFile, ERROR_MODE);
 		}
 
 	}
@@ -215,7 +234,7 @@ public class Main {
 			File folder = new File(pathToInputFiles);
 			ArrayList<String> names = new ArrayList<String>(
 					Arrays.asList(folder.list()));
-			System.out.println(names.toString());
+			//System.out.println(names.toString());
 			for (String currentName : names) {
 				File currentFile = new File(pathToInputFiles
 						+ java.io.File.separator + currentName);
@@ -224,7 +243,7 @@ public class Main {
 					if (currentFile.getName().toLowerCase().contains(".cfc")) {
 						String fileNameWithPath = "";
 						fileNameWithPath = currentFile.getName().split(".cfc")[0];
-						System.out.println(fileNameWithPath);
+						//System.out.println(fileNameWithPath);
 						fileMap.put(fileNameWithPath + ".cfc", fileNameWithPath
 								+ ".ts");
 					}

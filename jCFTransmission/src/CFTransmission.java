@@ -52,7 +52,7 @@ public class CFTransmission {
 	    listener = new MergeEntities(parser, tokens, fileName, "get");
 	    
 	    walker.walk(listener, componentData);
-		System.out.println(propertyList.toString());
+		//System.out.println(propertyList.toString());
 		return propertyList;
 		
 	}
@@ -90,7 +90,7 @@ public class CFTransmission {
 	    listener = new MergeEntities(parser, tokens, fileName, "add");
 	    
 	    walker.walk(listener, componentData);
-	    System.out.println(sourceText);
+	    //System.out.println(sourceText);
 	    propertyList.add(sourceText);
 		return sourceText;
 	}
@@ -101,7 +101,7 @@ public class CFTransmission {
 	 * @param cfcfile
 	 * @return returns the typescript version of the cfc file.
 	 */
-	public static String transpile(String cfcfile, String outFile){
+	public static String transpile(String cfcfile, String outFile, String ERROR_MODE){
 		
 		tsFile = outFile;
 		// Get our lexer
@@ -116,6 +116,24 @@ public class CFTransmission {
 	 
 	    // Pass the tokens to the parser
 	    CFTransmissionParser parser = new CFTransmissionParser(tokens);
+	    
+	    //Check the error mode and setup the error listener accordingly.
+	    if (ERROR_MODE.equals("TOCONSOLE")){
+	    	//nothing to be done as this is the default behavior.
+	    }else if (ERROR_MODE.equals("TOFILE")){
+	    	//setup a error file. need to implement a class for this.
+	    }else if (ERROR_MODE.equals("NONE")){
+	    	//Tell the parser to shut it.
+	    	//System.out.println("Setting Mode To: " + ERROR_MODE);
+	    	//Remove the old error listeners and add the new one.
+	    	parser.removeErrorListeners();
+	    	parser.addErrorListener(ThrowNoErrorsListener.INSTANCE);
+	    	lexer.removeErrorListeners();
+	    	lexer.addErrorListener(ThrowNoErrorsListener.INSTANCE);
+	    }
+	    
+	    //Add the custom error listener
+	    parser.removeErrorListeners(); //Removes the default error listener
 	    
 	    // Specify our entry point
 	    CFTransmissionParser.ComponentContext componentData = parser.component();
@@ -156,6 +174,7 @@ public class CFTransmission {
 	    // Pass the tokens to the parser
 	    CFTransmissionParser parser = new CFTransmissionParser(tokens);
 	    
+	    
 	    // Specify our entry point
 	    CFTransmissionParser.ComponentContext componentData = parser.component();
 	    
@@ -167,7 +186,7 @@ public class CFTransmission {
 	    listener = new MergeEntities(parser, tokens, fileName, "remove");
 	    
 	    walker.walk(listener, componentData);
-	    System.out.println(sourceText);
+	    //System.out.println(sourceText);
 	    propertyList.add(sourceText);
 		return sourceText;
 		
